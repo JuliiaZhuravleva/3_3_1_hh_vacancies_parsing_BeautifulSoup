@@ -1,15 +1,19 @@
+from logger import logger
+
 import requests
 import json
 from bs4 import BeautifulSoup
 from fake_headers import Headers
 
 
+@logger
 def get_headers():
     headers = Headers(browser='chrome', os='win').generate()
     headers['accept-language'] = 'ru-RU,ru;q=0.9'
     return headers
 
 
+@logger
 def criteria_check(vacancy_description):
     verification_passed = False
     if vacancy_description.find('Django') >= 0 and vacancy_description.find('Flask') >= 0:
@@ -17,6 +21,7 @@ def criteria_check(vacancy_description):
     return verification_passed
 
 
+@logger
 def get_list_vacancies_html(link):
     html = requests.get(link, headers=get_headers()).text
     soup = BeautifulSoup(html, features='lxml')
@@ -26,6 +31,7 @@ def get_list_vacancies_html(link):
     return {'vacancies_tag': vacancies_tag, 'next_page': next_page}
 
 
+@logger
 def get_vacancy_attrs(vacancy_tag):
     title_tag = vacancy_tag.find(class_='serp-item__title')
     link = title_tag['href']
@@ -49,6 +55,7 @@ def get_vacancy_attrs(vacancy_tag):
     return {'vacancy_attrs': vacancy_attrs, 'criteria_check': criteria_check(description)}
 
 
+@logger
 def get_next_page(soup):
     link = ''
     exists = True
